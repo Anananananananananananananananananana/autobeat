@@ -2,14 +2,20 @@ import json
 import random
 
 noteDict = {
-    'b511': ['1610', '2110'],
-    '1610': ['b511', '7511'],
-    '2110': ['b511', '7511'],
-    '7511': ['1610', '2110']
+    'b511': ['1610', '2110', '4210', '9210'],
+    '1610': ['b511', '7511', '7311', 'a511', 'a011'],
+    '2110': ['b511', '7511', 'a511', 'a011'],
+    '7511': ['1610', '2110', '4210', '9210'],
+    '4210': ['b511', '7511', 'a511', '7311'],
+    '9210': ['b511', '7511', '7311'],
+    'a511': ['1610', '4210', '2110'],
+    '7311': ['1610', '4210', '9210'],
+    'a011': ['3710', '1610', '2110'],
+    '3710': ['a011']
 }
 
 
-def mapDifficulty(songFolderName, style, difficulty, numNotes=20):
+def mapDifficulty(songFolderName, style, difficulty, numNotes=200):
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'r')
     datJSON = json.load(dat)
     dat.close()
@@ -25,7 +31,7 @@ def mapDifficulty(songFolderName, style, difficulty, numNotes=20):
 
 def noteJSON(noteName, time):
     data = {
-        "_time" : time,
+        "_time" : time / 2 + 2,
         "_lineIndex": int(noteName[0], 16) % 4,
         "_lineLayer": int(noteName[0], 16)//4,
         "_type": int(noteName[2]),
