@@ -2,23 +2,25 @@ import json
 import random
 
 noteDict = {
-    'b501': ['1600', '2100'],
-    '1600': ['b501', '7501'],
-    '2100': ['b501', '7501'],
-    '7501': ['1600', '2100']
+    'b511': ['1610', '2110'],
+    '1610': ['b511', '7511'],
+    '2110': ['b511', '7511'],
+    '7511': ['1610', '2110']
 }
 
 
 def mapDifficulty(songFolderName, style, difficulty, numNotes=20):
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'r')
-    datJSON = json.load(dat.read())
-    datJSON['_events'] = ['2100']
+    datJSON = json.load(dat)
+    dat.close()
+    dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'w')
+    datJSON['_notes'] = ['2110']
     for i in range(numNotes):
-        length = len(noteDict[datJSON['_events'][i]])
-        datJSON['_events'].append(noteDict[datJSON['_events'][i]][random.randint(0, length-1)])
-    for time in range(len(noteDict)):
-        datJSON['_events'][time] = noteJSON(datJSON['_events'][time], time)
-    dat.write(json.dump(datJSON))
+        length = len(noteDict[datJSON['_notes'][i]])
+        datJSON['_notes'].append(noteDict[datJSON['_notes'][i]][random.randint(0, length-1)])
+    for time in range(len(datJSON['_notes'])):
+        datJSON['_notes'][time] = noteJSON(datJSON['_notes'][time], time)
+    json.dump(datJSON, dat)
 
 
 def noteJSON(noteName, time):
@@ -31,3 +33,5 @@ def noteJSON(noteName, time):
     }
     return data
 
+
+mapDifficulty('test', 'Standard', 'ExpertPlus')

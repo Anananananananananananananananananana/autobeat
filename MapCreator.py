@@ -40,10 +40,11 @@ def createDifficulty(songFolderName, diff, style):
         # '_customData': {
 
         # }
+        '_notes': [],
         '_events': []
     }
     f = open(songFolderName + '\\' + diff + style + '.dat', 'w')
-    f.write(json.dump(diff_dict))
+    json.dump(diff_dict, f)
     f.close()
 
 
@@ -100,42 +101,30 @@ def createSongFolder(songFolderName):
 def createTestFolder():
     createSongFolder('test')
     songInfo = {
-        'name': 'SLIME INCIDENT',
+        'name': 'Markov',
         'subName': '',
-        'artist': 'Camellia',
-        'bpm': 160,
-        'audio': 'slime.egg',
-        'cover': 'cover.jpg'
+        'artist': 'w/e',
+        'bpm': 128,
+        'audio': 'song.ogg',
+        'cover': ''
     }
     mapInfo = {
-        'pStart': 200,
+        'pStart': 1,
         'pDur': 10,
         'env': 'DefaultEnvironment',
     }
     infoDict = createInfoDict(songInfo, mapInfo)
 
-    eInfo = {
-        'type': 'Standard',
-        'diff': 'Expert',
-        'njs': 18,
-        'offset': -0.4
-    }
-    eCustomData = {
-        '_difficultyLabel': 'SMOOTH SCENARIO'
-    }
     eplusInfo = {
         'type': 'Standard',
         'diff': 'ExpertPlus',
         'njs': 20,
-        'offset': -0.725
+        'offset': .067
     }
 
-    eplusCustomData = {
-        '_difficultyLabel': 'STICKY SITUATION'
-    }
-    updateDifficulty(infoDict, eplusInfo, customData=eplusCustomData)
-    updateDifficulty(infoDict, eInfo, customData=eCustomData)
+    updateDifficulty(infoDict, eplusInfo)
     createInfoDat(infoDict, 'test')
+    createDifficulty('test', 'ExpertPlus', 'Standard')
 
 
 createTestFolder()
