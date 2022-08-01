@@ -34,6 +34,18 @@ def createInfoDict(songInfo, mapInfo, customSongData=None):
         info['_customData'] = customSongData
     return info
 
+def createDifficulty(songFolderName, diff, style):
+    diff_dict = {
+        '_version': '2.0.0',
+        # '_customData': {
+
+        # }
+        '_events': []
+    }
+    f = open(songFolderName + '\\' + diff + style + '.dat', 'w')
+    f.write(json.dump(diff_dict))
+    f.close()
+
 
 # updates an existing difficulty or creates a new one if specified difficulty does not exist
 def updateDifficulty(info, diffInfo, customData=None):
@@ -76,6 +88,8 @@ def createInfoDat(info, songFolderName):
     f = open(songFolderName+'\\Info.dat', 'w')
     f.write(infoJSON)
     f.close()
+
+
 
 
 def createSongFolder(songFolderName):
