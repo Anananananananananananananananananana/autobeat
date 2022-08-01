@@ -73,7 +73,7 @@ def updateDifficulty(info, diffInfo, customData=None):
 
 def createInfoDat(info, songFolderName):
     infoJSON = json.dumps(info, indent=2)
-    f = open(songFolderName+'\\info.dat', 'w')
+    f = open(songFolderName+'\\Info.dat', 'w')
     f.write(infoJSON)
     f.close()
 
