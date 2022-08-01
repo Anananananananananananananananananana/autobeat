@@ -36,11 +36,11 @@ def createInfoDict(songInfo, mapInfo, customSongData=None):
 
 
 # updates an existing difficulty or creates a new one if specified difficulty does not exist
-def updateDifficulty(info, characteristic, diffInfo, customData = None):
+def updateDifficulty(info, diffInfo, customData=None):
     difficultyJSON = {
         "_difficulty": diffInfo['diff'],
         "_difficultyRank": DIFFICULTY_RANKS[diffInfo['diff']],
-        "_beatmapFilename": diffInfo['diff'] + characteristic + '.dat',
+        "_beatmapFilename": diffInfo['diff'] + diffInfo['type'] + '.dat',
         "_noteJumpMovementSpeed": diffInfo['njs'],
         "_noteJumpStartBeatOffset": diffInfo['offset']
     }
@@ -52,13 +52,13 @@ def updateDifficulty(info, characteristic, diffInfo, customData = None):
 
     if customData is not None:
         difficultyJSON['_customData'] = customData
+
     setIndex = len(info['_difficultyBeatmapSets'])
     for s in range(len(info['_difficultyBeatmapSets'])):
-        if info['_difficultyBeatmapSets'][s]['_beatmapCharacteristicName'] == characteristic:
+        if info['_difficultyBeatmapSets'][s]['_beatmapCharacteristicName'] == diffInfo['type']:
             setIndex = s
             break
     if setIndex == len(info['_difficultyBeatmapSets']):
-
         info['_difficultyBeatmapSets'].append(setJSON)
 
     for d in range(len(info['_difficultyBeatmapSets'][setIndex]['_difficultyBeatmaps'])):
@@ -82,51 +82,46 @@ def createSongFolder(songFolderName):
     if not os.path.exists(songFolderName):
         os.mkdir(songFolderName)
 
+
 def createTestFolder():
     createSongFolder('test')
     songInfo = {
-        'name': 'test',
+        'name': 'SLIME INCIDENT',
         'subName': '',
-        'artist': 'teste cull',
-        'bpm': 69,
-        'audio': 'song.ogg',
-        'cover': 'cover.png'
+        'artist': 'Camellia',
+        'bpm': 160,
+        'audio': 'slime.egg',
+        'cover': 'cover.jpg'
     }
     mapInfo = {
-        'pStart': 0,
-        'pDur': 15,
+        'pStart': 200,
+        'pDur': 10,
         'env': 'DefaultEnvironment',
     }
     infoDict = createInfoDict(songInfo, mapInfo)
 
-    eplusInfo = {
-        'diff': 'ExpertPlus',
-        'njs': '20',
-        'offset': 0.067
-    }
-
     eInfo = {
+        'type': 'Standard',
         'diff': 'Expert',
-        'njs': '15',
-        'offset': 0.067
+        'njs': 18,
+        'offset': -0.4
+    }
+    eCustomData = {
+        '_difficultyLabel': 'SMOOTH SCENARIO'
+    }
+    eplusInfo = {
+        'type': 'Standard',
+        'diff': 'ExpertPlus',
+        'njs': 20,
+        'offset': -0.725
     }
 
-    nInfo = {
-        'diff': 'Normal',
-        'njs': '5',
-        'offset': 0.067
+    eplusCustomData = {
+        '_difficultyLabel': 'STICKY SITUATION'
     }
-
-    hInfo = {
-        'diff': 'Hard',
-        'njs': '10',
-        'offset': 0.067
-    }
-
-    updateDifficulty(infoDict, 'Standard', eplusInfo)
-    updateDifficulty(infoDict, 'Standard', eInfo)
-    updateDifficulty(infoDict, 'Standard', nInfo)
-    updateDifficulty(infoDict, 'Standard', hInfo)
+    updateDifficulty(infoDict, eplusInfo, customData=eplusCustomData)
+    updateDifficulty(infoDict, eInfo, customData=eplusCustomData)
     createInfoDat(infoDict, 'test')
+
 
 createTestFolder()
