@@ -9,8 +9,8 @@ noteDict = {
 }
 
 
-def mapDifficulty(style, difficulty, numNotes=20):
-    dat = open(difficulty+style+'.dat', 'r')
+def mapDifficulty(songFolderName, style, difficulty, numNotes=20):
+    dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'r')
     datJSON = json.load(dat.read())
     datJSON['_events'] = ['2100']
     for i in range(numNotes):
