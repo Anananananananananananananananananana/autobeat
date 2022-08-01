@@ -134,7 +134,7 @@ def createTestFolder():
         '_difficultyLabel': 'STICKY SITUATION'
     }
     updateDifficulty(infoDict, eplusInfo, customData=eplusCustomData)
-    updateDifficulty(infoDict, eInfo, customData=eplusCustomData)
+    updateDifficulty(infoDict, eInfo, customData=eCustomData)
     createInfoDat(infoDict, 'test')
 
 
