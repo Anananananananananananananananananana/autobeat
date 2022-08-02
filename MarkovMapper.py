@@ -4,37 +4,54 @@ import Utils
 from Utils import noteJSON as nJ
 noteDict = Utils.noteDict
 
+FIRST_RIGHT_NOTE = '2110'
+FIRST_LEFT_NOTE = '9001'
+START_BEAT = 4
 
-def mapDifficulty(songFolderName, difficulty, style, numNotes=200):
+
+
+def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'r')
     datJSON = json.load(dat)
     dat.close()
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'w')
-    datJSON['_notes'] = ['2110', '9001']
+    datJSON['_notes'] = [nJ(FIRST_RIGHT_NOTE, START_BEAT), nJ(FIRST_LEFT_NOTE, START_BEAT)]
     lastNotes = {
-        '0': '9001',
-        '1': '2110'
+        '0': FIRST_LEFT_NOTE,
+        '1': FIRST_RIGHT_NOTE,
+        '-1': FIRST_LEFT_NOTE
     }
     placingLeftNote = True
     placingRightNote = True
-    for i in range(numNotes):
+
+
+    noteTimes = range(START_BEAT + 1, numBeats + START_BEAT)   # Temporary placeholder value
+    print(noteTimes)
+
+    for nt in noteTimes:
         if placingRightNote:
             while True:
                 nextRightNote = noteDict[lastNotes['1']][random.randint(0, len(noteDict[lastNotes['1']]) - 1)]
-                if not isBadNote(datJSON['_notes'][-1], nextRightNote):
+                if not isBadNote(lastNotes['-1'], nextRightNote):
                     break
-            datJSON['_notes'].append(nextRightNote)
+                print(nextRightNote)
+            datJSON['_notes'].append(nJ(nextRightNote, nt))
             lastNotes['1'] = nextRightNote
+            lastNotes['-1'] = nextRightNote
         if placingLeftNote:
             while True:
                 nextLeftNote = noteDict[lastNotes['0']][random.randint(0, len(noteDict[lastNotes['0']])-1)]
-                if not isBadNote(datJSON['_notes'][-1], nextLeftNote):
+                if not isBadNote(lastNotes['-1'], nextLeftNote):
                     break
-            datJSON['_notes'].append(nextLeftNote)
+                print(nextLeftNote,lastNotes['-1'], lastNotes['0'])
+            datJSON['_notes'].append(nJ(nextLeftNote, nt))
             lastNotes['0'] = nextLeftNote
-    for time in range(len(datJSON['_notes'])):
-        datJSON['_notes'][time] = nJ(datJSON['_notes'][time], time)
+            lastNotes['-1'] = nextLeftNote
+        
+
+    # Dump new notes json into difficulty.dat
     json.dump(datJSON, dat)
+
 
 
 def isBadNote(prevNote, currNote):

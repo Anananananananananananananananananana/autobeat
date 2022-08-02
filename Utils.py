@@ -24,7 +24,7 @@ def mirrorNoteDict(dict):
 
 def noteJSON(noteName, time):
     data = {
-        "_time": (time - (int(noteName[2]) ^ 1))/2 + 2,
+        "_time": time,
         "_lineIndex": int(noteName[0], 16) % 4,
         "_lineLayer": int(noteName[0], 16)//4,
         "_type": int(noteName[2]),
@@ -40,6 +40,7 @@ def noteCSVtoDict(csv):
         chains = line[:-1].split(',')
         noteDict[chains[0]] = [c for c in chains[1:] if c != '']
     return noteDict
+
 
 noteDict = noteCSVtoDict('RightHand.csv')
 noteDict.update(mirrorNoteDict(noteDict))
