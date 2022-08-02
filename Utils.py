@@ -1,4 +1,4 @@
-
+import json
 
 
 def mirrorNote(note_ID):
@@ -14,7 +14,6 @@ def mirrorNote(note_ID):
     return (new_coord + new_cut + new_hand + note_ID[3])[2:]
 
 
-
 def mirrorNoteDict(dict):
     new_dict = {}
     for key in dict:
@@ -23,20 +22,25 @@ def mirrorNoteDict(dict):
     return new_dict
 
 
+def noteJSON(noteName, time):
+    data = {
+        "_time": (time - (int(noteName[2]) ^ 1))/2 + 2,
+        "_lineIndex": int(noteName[0], 16) % 4,
+        "_lineLayer": int(noteName[0], 16)//4,
+        "_type": int(noteName[2]),
+        "_cutDirection": int(noteName[1])
+    }
+    return data
 
 
-noteDict = {
-    'b511': ['1610', '2110', '4210', '9210'],
-    '1610': ['b511', '7511', '7311', 'a511', 'a011'],
-    '2110': ['b511', '7511', 'a511', 'a011'],
-    '7511': ['1610', '2110', '4210', '9210'],
-    '4210': ['b511', '7511', 'a511', '7311'],
-    '9210': ['b511', '7511', '7311'],
-    'a511': ['1610', '4210', '2110'],
-    '7311': ['1610', '4210', '9210'],
-    'a011': ['3710', '1610', '2110'],
-    '3710': ['a011', 'b511']
-}
+def noteCSVtoDict(csv):
+    noteDict = dict()
+    vals = open(csv, 'r')
+    for line in vals.readlines():
+        chains = line[:-1].split(',')
+        noteDict[chains[0]] = [c for c in chains[1:] if c != '']
+    return noteDict
 
+noteDict = noteCSVtoDict('RightHand.csv')
 noteDict.update(mirrorNoteDict(noteDict))
 

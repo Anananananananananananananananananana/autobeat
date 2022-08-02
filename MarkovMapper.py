@@ -1,7 +1,7 @@
 import json
 import random
 import Utils
-
+from Utils import noteJSON as nJ
 noteDict = Utils.noteDict
 
 
@@ -10,9 +10,9 @@ def mapDifficulty(songFolderName, difficulty, style, numNotes=200):
     datJSON = json.load(dat)
     dat.close()
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'w')
-    datJSON['_notes'] = ['2110', '1100']
+    datJSON['_notes'] = ['2110', '9001']
     lastNotes = {
-        '0': '1100',
+        '0': '9001',
         '1': '2110'
     }
     placingLeftNote = True
@@ -33,14 +33,12 @@ def mapDifficulty(songFolderName, difficulty, style, numNotes=200):
             datJSON['_notes'].append(nextLeftNote)
             lastNotes['0'] = nextLeftNote
     for time in range(len(datJSON['_notes'])):
-        datJSON['_notes'][time] = noteJSON(datJSON['_notes'][time], time)
+        datJSON['_notes'][time] = nJ(datJSON['_notes'][time], time)
     json.dump(datJSON, dat)
 
 
 def isBadNote(prevNote, currNote):
-
     return isVisionBlock(prevNote, currNote) or isOppositeColumn(prevNote, currNote)
-    # return isOppositeColumn(prevNote, currNote)
 
 
 def isVisionBlock(prevNote, currNote):
@@ -51,19 +49,8 @@ def isVisionBlock(prevNote, currNote):
 def isOppositeColumn(prevNote, currNote):
     if prevNote[2] == currNote[2]:
         return False
-    prevOC = int(prevNote[0], 16) % 4 % 3 not in [3 * int(prevNote[2]), 2, 1]
+    prevOC = int(prevNote[0], 16) % 4 not in [3 * int(prevNote[2]), 2, 1]
     currOC = int(currNote[0], 16) % 4 not in [3 * int(currNote[2]), 2, 1]
     if prevOC and currOC:
         return True
     return False
-
-
-def noteJSON(noteName, time):
-    data = {
-        "_time": time/2 + 2,
-        "_lineIndex": int(noteName[0], 16) % 4,
-        "_lineLayer": int(noteName[0], 16)//4,
-        "_type": int(noteName[2]),
-        "_cutDirection": int(noteName[1])
-    }
-    return data
