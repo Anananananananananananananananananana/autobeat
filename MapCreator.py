@@ -1,5 +1,6 @@
 import json
 import os
+import MarkovMapper as mappy
 
 POSSIBLE_DIFF_NAMES = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus']
 DIFFICULTY_RANKS = {
@@ -128,3 +129,4 @@ def createTestFolder():
 
 
 createTestFolder()
+mappy.mapDifficulty('test', 'ExpertPlus', 'Standard')
