@@ -20,10 +20,22 @@ def mapDifficulty(songFolderName, style, difficulty, numNotes=200):
     datJSON = json.load(dat)
     dat.close()
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'w')
-    datJSON['_notes'] = ['2110']
+    datJSON['_notes'] = ['2110', '9001']
+    lastNotes = {
+        0: '9001',
+        1: '2110'
+    }
+    placingLeftNote = True
+    placingRightNote = True
     for i in range(numNotes):
-        length = len(noteDict[datJSON['_notes'][i]])
-        datJSON['_notes'].append(noteDict[datJSON['_notes'][i]][random.randint(0, length-1)])
+        if placingRightNote:
+            nextRightNote = noteDict[lastNotes[1]][random.randint(0, len(noteDict[lastNotes[1]]))]
+            datJSON['_notes'].append(nextRightNote)
+            lastNotes[1] = nextRightNote
+        if placingLeftNote:
+            nextLeftNote = noteDict[lastNotes[0]][random.randint(0, len(noteDict[lastNotes[0]]))]
+            datJSON['_notes'].append(nextLeftNote)
+            lastNotes[0] = nextLeftNote
     for time in range(len(datJSON['_notes'])):
         datJSON['_notes'][time] = noteJSON(datJSON['_notes'][time], time)
     json.dump(datJSON, dat)
@@ -31,7 +43,7 @@ def mapDifficulty(songFolderName, style, difficulty, numNotes=200):
 
 def noteJSON(noteName, time):
     data = {
-        "_time" : time / 2 + 2,
+        "_time": time / 2 + 2,
         "_lineIndex": int(noteName[0], 16) % 4,
         "_lineLayer": int(noteName[0], 16)//4,
         "_type": int(noteName[2]),
