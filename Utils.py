@@ -25,11 +25,6 @@ def mirrorNoteDict(dict):
 
 
 
-
-
-
-
-
 noteDict = {
     'b511': ['1610', '2110', '4210', '9210'],
     '1610': ['b511', '7511', '7311', 'a511', 'a011'],
@@ -42,3 +37,6 @@ noteDict = {
     'a011': ['3710', '1610', '2110'],
     '3710': ['a011']
 }
+
+noteDict.update(mirrorNoteDict(noteDict))
+
