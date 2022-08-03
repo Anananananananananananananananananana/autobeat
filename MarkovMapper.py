@@ -22,8 +22,8 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
         '1': FIRST_RIGHT_NOTE,
         '-1': FIRST_LEFT_NOTE
     }
-    placingLeftNote = False
-    placingRightNote = True
+    placingLeftNote = random.randint(0, 1) == 1
+    placingRightNote = random.randint(0, 1) == 1
 
     noteTimes = [x/2 + START_BEAT for x in range(1, 400)]  # Temporary placeholder value
 
@@ -50,8 +50,8 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
             datJSON['_notes'].append(nJ(nextLeftNote, nt))
             lastNotes['0'] = nextLeftNote
             lastNotes['-1'] = nextLeftNote
-        placingRightNote = not placingRightNote
-        placingLeftNote = not placingLeftNote
+        placingRightNote = random.randint(0, 1) == 1
+        placingLeftNote = random.randint(0, 1) == 1
     # Dump new notes json into difficulty.dat
     json.dump(datJSON, dat)
 

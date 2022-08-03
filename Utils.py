@@ -41,6 +41,7 @@ def noteCSVtoDict(csv):
         noteDict[chains[0]] = [c for c in chains[1:] if c != '']
     return noteDict
 
+
 def generateCutPath(noteName):
     cutPaths = {
         '0': lambda k: [k - 4],
