@@ -2,6 +2,7 @@ import json
 import random
 import Utils
 from Utils import noteJSON as nJ
+from Utils import generateCutPath as cP
 noteDict = Utils.noteDict
 
 FIRST_RIGHT_NOTE = '2110'
@@ -21,37 +22,52 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
         '1': FIRST_RIGHT_NOTE,
         '-1': FIRST_LEFT_NOTE
     }
-    placingLeftNote = True
+    placingLeftNote = False
     placingRightNote = True
 
-
-    noteTimes = range(START_BEAT + 1, numBeats + START_BEAT)   # Temporary placeholder value
-    print(noteTimes)
+    noteTimes = [x/2 + START_BEAT for x in range(1, 400)]  # Temporary placeholder value
 
     for nt in noteTimes:
-        if placingRightNote:
+        if placingRightNote and placingLeftNote:
+            dominance = random.randint(0, 1)
             while True:
-                nextRightNote = noteDict[lastNotes['1']][random.randint(0, len(noteDict[lastNotes['1']]) - 1)]
-                if not isBadNote(lastNotes['-1'], nextRightNote):
+                note1 = generateNote(lastNotes['-1'], lastNotes[str(dominance)])
+                note2 = generateNote(note1, lastNotes[str(dominance ^ 1)])
+                if not isBadDouble(note1, note2):
                     break
-                print(nextRightNote)
+            lastNotes[str(dominance)] = note1
+            lastNotes[str(dominance ^ 1)] = note2
+            datJSON['_notes'].append(nJ(note1, nt))
+            datJSON['_notes'].append(nJ(note2, nt))
+            lastNotes['-1'] = note2
+        elif placingRightNote:
+            nextRightNote = generateNote(lastNotes['-1'], lastNotes['1'])
             datJSON['_notes'].append(nJ(nextRightNote, nt))
             lastNotes['1'] = nextRightNote
             lastNotes['-1'] = nextRightNote
-        if placingLeftNote:
-            while True:
-                nextLeftNote = noteDict[lastNotes['0']][random.randint(0, len(noteDict[lastNotes['0']])-1)]
-                if not isBadNote(lastNotes['-1'], nextLeftNote):
-                    break
-                print(nextLeftNote,lastNotes['-1'], lastNotes['0'])
+        elif placingLeftNote:
+            nextLeftNote = generateNote(lastNotes['-1'], lastNotes['0'])
             datJSON['_notes'].append(nJ(nextLeftNote, nt))
             lastNotes['0'] = nextLeftNote
             lastNotes['-1'] = nextLeftNote
-        
-
+        placingRightNote = not placingRightNote
+        placingLeftNote = not placingLeftNote
     # Dump new notes json into difficulty.dat
     json.dump(datJSON, dat)
 
+
+def generateNote(prevNote, prevHandedNote):
+    while True:
+        nextNote = noteDict[prevHandedNote][random.randint(0, len(noteDict[prevHandedNote]) - 1)]
+        if not isBadNote(prevNote, nextNote):
+            break
+    return nextNote
+
+
+def isBadDouble(note1, note2):
+    if note2[0] in cP(note1) or note1[0] in cP(note2):
+        return True
+    return False
 
 
 def isBadNote(prevNote, currNote):
