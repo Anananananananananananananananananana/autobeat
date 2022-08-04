@@ -3,8 +3,10 @@ import random
 import Utils
 from Utils import noteJSON as nJ
 from Utils import generateCutPath as cP
-noteDict = Utils.noteDict
+from Utils import generateNoteTimesFromDat as times
 
+
+noteDict = Utils.noteDict
 FIRST_RIGHT_NOTE = '2110'
 FIRST_LEFT_NOTE = '9001'
 START_BEAT = 4
@@ -16,18 +18,19 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
     datJSON = json.load(dat)
     dat.close()
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'w')
-    datJSON['_notes'] = [nJ(FIRST_RIGHT_NOTE, START_BEAT), nJ(FIRST_LEFT_NOTE, START_BEAT)]
+    placingLeftNote = random.randint(0, 1) == 1
+    placingRightNote = random.randint(0, 1) == 1
+
+    noteTimes = times('look.dat')  # Temporary placeholder value
+
+    datJSON['_notes'] = [nJ(FIRST_RIGHT_NOTE, noteTimes[0]), nJ(FIRST_LEFT_NOTE, noteTimes[1])]
     lastNotes = {
         '0': FIRST_LEFT_NOTE,
         '1': FIRST_RIGHT_NOTE,
         '-1': FIRST_LEFT_NOTE
     }
-    placingLeftNote = random.randint(0, 1) == 1
-    placingRightNote = random.randint(0, 1) == 1
 
-    noteTimes = [x/2 + START_BEAT for x in range(1, 400)]  # Temporary placeholder value
-
-    for nt in noteTimes:
+    for nt in noteTimes[2:]:
         if placingRightNote and placingLeftNote:
             dominance = random.randint(0, 1)
             while True:
@@ -50,8 +53,7 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
             datJSON['_notes'].append(nJ(nextLeftNote, nt))
             lastNotes['0'] = nextLeftNote
             lastNotes['-1'] = nextLeftNote
-        placingRightNote = random.randint(0, 1) == 1
-        placingLeftNote = random.randint(0, 1) == 1
+        placingRightNote, placingLeftNote = determinePlacingNotes(nt, noteTimes)
     # Dump new notes json into difficulty.dat
     json.dump(datJSON, dat)
 
@@ -87,3 +89,12 @@ def isOppositeColumn(prevNote, currNote):
     if prevOC and currOC:
         return True
     return False
+
+
+def determinePlacingNotes(time, times):
+    i = times.index(time)
+    # if notes are too close together it will only place one of the two notes
+    if times[i-1] >= time - 0.25 and times[i+1] <= time + 0.25:
+        return [(True, False), (False, True)][random.randint(0, 1)]
+    else:
+        return [(True, False), (False, True), (True, True)][random.randint(0, 2)]

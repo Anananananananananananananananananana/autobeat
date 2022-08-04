@@ -66,5 +66,17 @@ def generateCutPath(noteName):
     return filtered
 
 
+def generateNoteTimesFromDat(filepath):
+    dat = json.load(open(filepath, 'r'))
+    noteSet = set()
+    noteTimes = []
+    for note in dat['_notes']:
+        if note['_type'] != 3:
+            noteSet.add(note['_time'])
+        if len(noteSet) > len(noteTimes):
+            noteTimes.append(note['_time'])
+    return noteTimes
+
+
 noteDict = noteCSVtoDict('RightHand.csv')
 noteDict.update(mirrorNoteDict(noteDict))
