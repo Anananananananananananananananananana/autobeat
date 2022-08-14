@@ -22,15 +22,22 @@ def mirrorNoteDict(dict):
     return new_dict
 
 
-def noteJSON(noteName, time):
+def noteJSON(name, time):
     data = {
         "_time": time,
-        "_lineIndex": int(noteName[0], 16) % 4,
-        "_lineLayer": int(noteName[0], 16)//4,
-        "_type": int(noteName[2]),
-        "_cutDirection": int(noteName[1])
+        "_lineIndex": int(name[0], 16) % 4,
+        "_lineLayer": int(name[0], 16)//4,
+        "_type": int(name[2]),
+        "_cutDirection": int(name[1])
     }
     return data
+
+
+def noteName(JSON, parity=''):
+    coord = [['8', '9', 'a', 'b'],
+             ['4', '5', '6', '7'],
+             ['0', '1', '2', '3']]
+    return coord[2-JSON['_lineLayer']][JSON['_lineIndex']]+str(JSON['_cutDirection'])+str(JSON['_type'])+str(parity)
 
 
 def noteCSVtoDict(csv):
