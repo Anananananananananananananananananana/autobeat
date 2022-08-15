@@ -27,33 +27,32 @@ headers = {
 }
 
 nD = dict()
-SLIDER_TIMING = 1/16
+SLIDER_TIMING = 1/13
 
 def initialize():
-    mapList = open('map_list.txt', 'r')
-    if not os.path.exists('map\\'):
-        os.mkdir('map\\')
-    if os.path.exists('map\\zipped'):
-        os.remove('map\\zipped')
-    if os.path.exists('map\\currentMap'):
-        shutil.rmtree('map\\currentMap')
+    if not os.path.exists('dlFolder\\'):
+        os.mkdir('dlFolder\\')
+    if os.path.exists('dlFolder\\zipped'):
+        os.remove('dlFolder\\zipped')
+    if os.path.exists('dlFolder\\currentMap'):
+        shutil.rmtree('dlFolder\\currentMap')
     return mapList
-# download map
-# read through map
-# delete map
+# download dlFolder
+# read through dlFolder
+# delete dlFolder
 
 
 def downloadMap(bshash):
     url = 'https://r2cdn.beatsaver.com/' + bshash + '.zip'
     r = requests.get(url, allow_redirects=True)
-    open('map\\zipped', 'wb').write(r.content)
-    with zipfile.ZipFile('map\\zipped', 'r') as zip_ref:
-        zip_ref.extractall('map\\currentMap')
+    open('dlFolder\\zipped', 'wb').write(r.content)
+    with zipfile.ZipFile('dlFolder\\zipped', 'r') as zip_ref:
+        zip_ref.extractall('dlFolder\\currentMap')
         zip_ref.close()
 
 
 def findDiffs():
-    path = 'map\\currentMap\\'
+    path = 'dlFolder\\currentMap\\'
     info = open(path+'Info.dat')
     infoDAT = json.load(info)
     standardIndex = -1
@@ -61,50 +60,20 @@ def findDiffs():
         if infoDAT['_difficultyBeatmapSets'][i]['_beatmapCharacteristicName'] == 'Standard':
             standardIndex = i
             break
-    print(infoDAT['_songName'])
+    print(infoDAT['_songName']+'\n')
     if standardIndex == -1:
         return []
-    return [e["_beatmapFilename"] for e in infoDAT['_difficultyBeatmapSets'][standardIndex]['_difficultyBeatmaps']]
+    diffList = []
+    for beatMap in infoDAT['_difficultyBeatmapSets'][standardIndex]['_difficultyBeatmaps']:
+        if '_customData' in beatMap.keys() and '_requirements' in beatMap['_customData'].keys():
+            if 'Noodle Extensions' in beatMap['_customData']['_requirements'] or 'Mapping Extensions' in beatMap['_customData']['_requirements']:
+                continue
+        diffList.append(beatMap['_beatmapFilename'])
+    return diffList
 
 
-# def readDiffs(diffNameList):
-#     for diff in diffNameList:
-#         print(diff[:-4])
-#         # JSON of the last notes for each hand
-#         lastJSON = [None, None]
-#         # names of the last notes for each hand
-#         lastNames = ['', '']
-
-#         diffDAT = open('map\\currentMap\\'+diff, 'r')
-#         d = json.load(diffDAT)
-#         diffDAT.close()
-
-#         for note in d['_notes']:
-#             ty = note['_type']
-#             # ignore all notes not on either hand
-#             if ty > 1:
-#                 continue
-#             elif lastJSON[ty] is None:
-#                 lastJSON[ty] = note
-#                 lastNames[ty] = nameof(note)
-#             else:
-#                 # check for stack/window/slider/DD , if so skip
-#                 if lastJSON[ty]['_time']+SLIDER_TIMING >= note['_time'] or lastNames[ty] == nameof(note):
-#                     continue
-#                 # otherwise make a chain from the last note to this one
-#                 else:
-#                     chainName = lastNames[ty] + ' ' + nameof(note)
-#                     if chainName in nD.keys():
-#                         nD[chainName] += 1
-#                     else:
-#                         nD[chainName] = 1
-#                     lastJSON[ty] = note
-#                     lastNames[ty] = nameof(note)
-
-
-def readDiffs(diffNameList, folder='map\\currentMap\\'):
+def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
     for diff in diffNameList:
-        print(diff[:-4])
         # JSON of the last notes for each hand
         lastJSON = [None, None]
         # names of the last notes for each hand
@@ -138,39 +107,40 @@ def readDiffs(diffNameList, folder='map\\currentMap\\'):
 
 
 def deleteMap():
-    if os.path.exists('map\\zipped'):
-        os.remove('map\\zipped')
-    if os.path.exists('map\\currentMap'):
-        shutil.rmtree('map\\currentMap')
+    if os.path.exists('dlFolder\\zipped'):
+        os.remove('dlFolder\\zipped')
+    if os.path.exists('dlFolder\\currentMap'):
+        shutil.rmtree('dlFolder\\currentMap')
 
-def generateHashList():
-    mapList = open('map_list.txt', 'w')
-    date = '2020-09-11T00%3A00%3A00%2B00%3A00'
-    while True: 
-        all_curated_maps_s = requests.get('https://api.beatsaver.com/maps/latest?after=' + date + '&automapper=false&sort=CURATED')
-        all_curated_maps = json.loads(all_curated_maps_s.text)
-        for map in all_curated_maps['docs']:
-            hash = map['versions'][0]['hash']
-            mapList.write(hash + '\n')
-        date = all_curated_maps['docs'][0]['lastPublishedAt'].replace(':', '%3A')[:-5] + '%2B00%3A00'
-        # print(date)
-        # print(all_curated_maps['docs'][0]['lastPublishedAt'])
-        time.sleep(1)
-        if len(all_curated_maps['docs']) != 20:
-            break
+
+def generateHashList(date):
+    mapList = []
+    all_curated_maps_s = requests.get('https://api.beatsaver.com/maps/latest?after=' + date + '&automapper=false&sort=CURATED')
+    all_curated_maps = json.loads(all_curated_maps_s.text)
+    for map in all_curated_maps['docs']:
+        hash = map['versions'][0]['hash']
+        mapList.append(hash)
+    end = all_curated_maps['docs'][0]['lastPublishedAt'].replace(':', '%3A')[:-5] + '%2B00%3A00'
+    return mapList, end
 
 
 
-generateHashList()
-# mapList = initialize()
-# for beatMap in mapList:
-#     downloadMap(beatMap[:-1])
-#     diffs = findDiffs()
-#     readDiffs(diffs)
-#     deleteMap()
-#     time.sleep(.5)
-# # readDiffs(os.listdir('speed'), 'speed\\')
-# totals = open('note_totals.txt', 'w')
-# sort = sorted(nD.items(), key=lambda kv: -kv[1])
-# for key, value in sort:
-#     totals.write(key + ': ' + str(value) + '\n')
+counter = 0
+date = '2020-09-11T00%3A00%3A00%2B00%3A00'
+while counter < 1:
+    counter += 1
+    mapList, date = generateHashList(date)
+    for beatMap in mapList:
+        downloadMap(beatMap)
+        diffs = findDiffs()
+        readDiffs(diffs)
+        deleteMap()
+        time.sleep(.5)
+    if len(mapList) != 20:
+        break
+
+totals = open('note_totals.txt', 'w')
+sort = sorted(nD.items(), key=lambda kv: -kv[1])
+for key, value in sort:
+    totals.write(key + ': ' + str(value) + '\n')
+
