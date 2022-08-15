@@ -124,24 +124,72 @@ def generateHashList(start_date, end_date):
     return mapList, end
 
 
+
+def assignParities():
+    parityDict = dict()
+    techList = []
+    cutDict = {
+        '1': {
+            '0': 1,
+            '1': 0,
+            '2': 0,
+            '3': 1,
+            '4': 1,
+            '5': 1,
+            '6': 0,
+            '7': 0
+        },
+        '0': {
+            '0': 1,
+            '1': 0,
+            '2': 1,
+            '3': 0,
+            '4': 1,
+            '5': 1,
+            '6': 0,
+            '7': 0
+        }
+    }
+    for key in nD.keys():
+        first = key[:3]
+        last = key[4:]
+        bad_list = [{'1', '7'}, {'1', '6'}, {'4', '0'}, {'5', '0'}, {'5', '3'}, {'7', '3'}, {'6', '2'}, {'4', '2'}]
+        if first[1] == '8' or last[1] == '8' or {first[1], last[1]} in bad_list:
+            continue
+        fp = cutDict[first[2]][first[1]]
+        lp = cutDict[last[2]][last[1]]
+        if fp == lp:
+            techList.append(key)
+        else:
+            if first+str(fp) in parityDict.keys():
+                parityDict[first+str(fp)].append(last+str(lp))
+            else:
+                parityDict[first + str(fp)] = [last + str(lp)]
+    tech = open('tech.txt', 'w')
+    good = open('good.txt', 'w')
+    for chain in techList:
+        tech.write(chain + '\n')
+    for key, value in parityDict.items():
+        good.write('\''+key + '\': ' + str(value) + ',\n')
+
 initialize()
 counter = 0
 start_date = '2020-10-09T00%3A00%3A00%2B00%3A00'
 end_date = '2022-08-13T00%3A00%3A00%2B00%3A00'
 while counter < 1:
-    # counter += 1
+    counter += 1
     mapList, end_date = generateHashList(start_date, end_date)
     for beatMap in mapList:
         downloadMap(beatMap)
         diffs = findDiffs()
         readDiffs(diffs)
         deleteMap()
-        time.sleep(.5)
+        time.sleep(.05)
     if len(mapList) != 20:
         break
-
 totals = open('note_totals.txt', 'w')
 sort = sorted(nD.items(), key=lambda kv: -kv[1])
 for key, value in sort:
     totals.write(key + ': ' + str(value) + '\n')
+assignParities()
 
