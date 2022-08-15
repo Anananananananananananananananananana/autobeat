@@ -49,7 +49,6 @@ def downloadMap(bshash):
         with zipfile.ZipFile('dlFolder\\zipped', 'r') as zip_ref:
             zip_ref.extractall('dlFolder\\currentMap')
             zip_ref.close()
-        return False
     except:
         return False
     return True
@@ -183,10 +182,10 @@ counter = 0
 start_date = '2020-10-09T00%3A00%3A00%2B00%3A00'
 end_date = '2022-08-13T00%3A00%3A00%2B00%3A00'
 while counter < 1:
-    counter += 1
+    # counter += 1
     mapList, end_date = generateHashList(start_date, end_date)
     for beatMap in mapList:
-        time.sleep(.5)
+        time.sleep(0.5)
         downloaded = downloadMap(beatMap)
         if not downloaded:
             print('\nskipped: '+beatMap)
