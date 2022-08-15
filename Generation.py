@@ -112,23 +112,25 @@ def deleteMap():
         shutil.rmtree('dlFolder\\currentMap')
 
 
-def generateHashList(date):
+def generateHashList(start_date, end_date):
     mapList = []
-    all_curated_maps_s = requests.get('https://api.beatsaver.com/maps/latest?after=' + date + '&automapper=false&sort=CURATED')
-    all_curated_maps = json.loads(all_curated_maps_s.text)
-    for map in all_curated_maps['docs']:
+    ranked_maps_s = requests.get('https://api.beatsaver.com/search/text/0?from=' + start_date +
+     '&noodle=false&ranked=true&sortOrder=Latest&to=' + end_date)
+    ranked_maps = json.loads(ranked_maps_s.text)
+    for map in ranked_maps['docs']:
         hash = map['versions'][0]['hash']
         mapList.append(hash)
-    end = all_curated_maps['docs'][0]['lastPublishedAt'].replace(':', '%3A')[:-5] + '%2B00%3A00'
+    end = ranked_maps['docs'][-1]['createdAt'].replace(':', '%3A')[:-5] + '%2B00%3A00'
     return mapList, end
 
 
 initialize()
 counter = 0
-date = '2020-09-11T00%3A00%3A00%2B00%3A00'
+start_date = '2020-10-09T00%3A00%3A00%2B00%3A00'
+end_date = '2022-08-13T00%3A00%3A00%2B00%3A00'
 while counter < 1:
     # counter += 1
-    mapList, date = generateHashList(date)
+    mapList, end_date = generateHashList(start_date, end_date)
     for beatMap in mapList:
         downloadMap(beatMap)
         diffs = findDiffs()
