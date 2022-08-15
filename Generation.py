@@ -66,7 +66,42 @@ def findDiffs():
     return [e["_beatmapFilename"] for e in infoDAT['_difficultyBeatmapSets'][standardIndex]['_difficultyBeatmaps']]
 
 
-def readDiffs(diffNameList):
+# def readDiffs(diffNameList):
+#     for diff in diffNameList:
+#         print(diff[:-4])
+#         # JSON of the last notes for each hand
+#         lastJSON = [None, None]
+#         # names of the last notes for each hand
+#         lastNames = ['', '']
+
+#         diffDAT = open('map\\currentMap\\'+diff, 'r')
+#         d = json.load(diffDAT)
+#         diffDAT.close()
+
+#         for note in d['_notes']:
+#             ty = note['_type']
+#             # ignore all notes not on either hand
+#             if ty > 1:
+#                 continue
+#             elif lastJSON[ty] is None:
+#                 lastJSON[ty] = note
+#                 lastNames[ty] = nameof(note)
+#             else:
+#                 # check for stack/window/slider/DD , if so skip
+#                 if lastJSON[ty]['_time']+SLIDER_TIMING >= note['_time'] or lastNames[ty] == nameof(note):
+#                     continue
+#                 # otherwise make a chain from the last note to this one
+#                 else:
+#                     chainName = lastNames[ty] + ' ' + nameof(note)
+#                     if chainName in nD.keys():
+#                         nD[chainName] += 1
+#                     else:
+#                         nD[chainName] = 1
+#                     lastJSON[ty] = note
+#                     lastNames[ty] = nameof(note)
+
+
+def readDiffs(diffNameList, folder='map\\currentMap\\'):
     for diff in diffNameList:
         print(diff[:-4])
         # JSON of the last notes for each hand
@@ -74,7 +109,7 @@ def readDiffs(diffNameList):
         # names of the last notes for each hand
         lastNames = ['', '']
 
-        diffDAT = open('map\\currentMap\\'+diff, 'r')
+        diffDAT = open(folder + diff, 'r')
         d = json.load(diffDAT)
         diffDAT.close()
 
@@ -109,12 +144,13 @@ def deleteMap():
 
 
 initialize()
-for beatMap in mapList:
-    downloadMap(beatMap[:-1])
-    diffs = findDiffs()
-    readDiffs(diffs)
-    deleteMap()
-    time.sleep(.5)
+# for beatMap in mapList:
+#     downloadMap(beatMap[:-1])
+#     diffs = findDiffs()
+#     readDiffs(diffs)
+#     deleteMap()
+#     time.sleep(.5)
+readDiffs(os.listdir('speed'), 'speed\\')
 totals = open('note_totals.txt', 'w')
 sort = sorted(nD.items(), key=lambda kv: -kv[1])
 for key, value in sort:

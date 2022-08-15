@@ -98,3 +98,4 @@ def determinePlacingNotes(time, times):
         return [(True, False), (False, True)][random.randint(0, 1)]
     else:
         return [(True, False), (False, True), (True, True)][random.randint(0, 2)]
+        
