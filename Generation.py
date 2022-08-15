@@ -45,9 +45,14 @@ def downloadMap(bshash):
     url = 'https://r2cdn.beatsaver.com/' + bshash + '.zip'
     r = requests.get(url, allow_redirects=True)
     open('dlFolder\\zipped', 'wb').write(r.content)
-    with zipfile.ZipFile('dlFolder\\zipped', 'r') as zip_ref:
-        zip_ref.extractall('dlFolder\\currentMap')
-        zip_ref.close()
+    try:
+        with zipfile.ZipFile('dlFolder\\zipped', 'r') as zip_ref:
+            zip_ref.extractall('dlFolder\\currentMap')
+            zip_ref.close()
+        return False
+    except:
+        return False
+    return True
 
 
 def findDiffs():
@@ -59,7 +64,7 @@ def findDiffs():
         if infoDAT['_difficultyBeatmapSets'][i]['_beatmapCharacteristicName'] == 'Standard':
             standardIndex = i
             break
-    print(infoDAT['_songName'], infoDAT['_levelAuthorName'] +'\n')
+    print('\n', infoDAT['_songName'], ' - ', infoDAT['_levelAuthorName'], sep='')
     if standardIndex == -1:
         return []
     diffList = []
@@ -77,7 +82,7 @@ def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
         lastJSON = [None, None]
         # names of the last notes for each hand
         lastNames = ['', '']
-
+        print(diff[:-12], end=' ')
         diffDAT = open(folder + diff, 'r')
         d = json.load(diffDAT)
         diffDAT.close()
@@ -103,6 +108,7 @@ def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
                         nD[chainName] = 1
                     lastJSON[ty] = note
                     lastNames[ty] = nameof(note)
+    print()
 
 
 def deleteMap():
@@ -180,11 +186,15 @@ while counter < 1:
     counter += 1
     mapList, end_date = generateHashList(start_date, end_date)
     for beatMap in mapList:
-        downloadMap(beatMap)
+        time.sleep(.5)
+        downloaded = downloadMap(beatMap)
+        if not downloaded:
+            print('\nskipped: '+beatMap)
+            deleteMap()
+            continue
         diffs = findDiffs()
         readDiffs(diffs)
         deleteMap()
-        time.sleep(.05)
     if len(mapList) != 20:
         break
 totals = open('note_totals.txt', 'w')

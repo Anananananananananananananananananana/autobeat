@@ -5,7 +5,7 @@ from Utils import noteJSON as nJ
 from Utils import generateCutPath as cP
 from Utils import generateNoteTimesFromDat as times
 
-
+# actually store probabilities
 noteDict = {
     '3110': ['7011', 'b011', '3011', 'a011', 'a411', '2011', '6011', '9011', '1011', '7511', '5011', 'b511', '9411', '2511', 'b411'],
     '0100': ['4001', '8001', '1001', '9001', '8401', '5001', '9501', '5501', '0001', 'a001', 'a501', '4401', '2001', '6001', '9401', '4501', '6501'],
@@ -186,7 +186,7 @@ FIRST_LEFT_NOTE = '9001'
 START_BEAT = 4
 
 
-
+# work off probabilities
 def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'r')
     datJSON = json.load(dat)
