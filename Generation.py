@@ -57,7 +57,10 @@ def downloadMap(bshash):
 def findDiffs():
     path = 'dlFolder\\currentMap\\'
     info = open(path+'Info.dat')
-    infoDAT = json.load(info)
+    try:
+        infoDAT = json.load(info)
+    except:
+        return []
     standardIndex = -1
     for i in range(len(infoDAT['_difficultyBeatmapSets'])):
         if infoDAT['_difficultyBeatmapSets'][i]['_beatmapCharacteristicName'] == 'Standard':
@@ -83,7 +86,11 @@ def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
         lastNames = ['', '']
         print(diff[:-12], end=' ')
         diffDAT = open(folder + diff, 'r')
-        d = json.load(diffDAT)
+        try:
+            d = json.load(diffDAT)
+            diffDAT.close()
+        except:
+            continue
         diffDAT.close()
 
         for note in d['_notes']:
