@@ -27,16 +27,17 @@ headers = {
 }
 
 nD = dict()
-mapList = open('map_list.txt', 'r')
 SLIDER_TIMING = 1/16
 
 def initialize():
+    mapList = open('map_list.txt', 'r')
     if not os.path.exists('map\\'):
         os.mkdir('map\\')
     if os.path.exists('map\\zipped'):
         os.remove('map\\zipped')
     if os.path.exists('map\\currentMap'):
         shutil.rmtree('map\\currentMap')
+    return mapList
 # download map
 # read through map
 # delete map
@@ -142,16 +143,34 @@ def deleteMap():
     if os.path.exists('map\\currentMap'):
         shutil.rmtree('map\\currentMap')
 
+def generateHashList():
+    mapList = open('map_list.txt', 'w')
+    date = '2020-09-11T00%3A00%3A00%2B00%3A00'
+    while True: 
+        all_curated_maps_s = requests.get('https://api.beatsaver.com/maps/latest?after=' + date + '&automapper=false&sort=CURATED')
+        all_curated_maps = json.loads(all_curated_maps_s.text)
+        for map in all_curated_maps['docs']:
+            hash = map['versions'][0]['hash']
+            mapList.write(hash + '\n')
+        date = all_curated_maps['docs'][0]['lastPublishedAt'].replace(':', '%3A')[:-5] + '%2B00%3A00'
+        # print(date)
+        # print(all_curated_maps['docs'][0]['lastPublishedAt'])
+        time.sleep(1)
+        if len(all_curated_maps['docs']) != 20:
+            break
 
-initialize()
+
+
+generateHashList()
+# mapList = initialize()
 # for beatMap in mapList:
 #     downloadMap(beatMap[:-1])
 #     diffs = findDiffs()
 #     readDiffs(diffs)
 #     deleteMap()
 #     time.sleep(.5)
-readDiffs(os.listdir('speed'), 'speed\\')
-totals = open('note_totals.txt', 'w')
-sort = sorted(nD.items(), key=lambda kv: -kv[1])
-for key, value in sort:
-    totals.write(key + ': ' + str(value) + '\n')
+# # readDiffs(os.listdir('speed'), 'speed\\')
+# totals = open('note_totals.txt', 'w')
+# sort = sorted(nD.items(), key=lambda kv: -kv[1])
+# for key, value in sort:
+#     totals.write(key + ': ' + str(value) + '\n')
