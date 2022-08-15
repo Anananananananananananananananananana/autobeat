@@ -36,7 +36,6 @@ def initialize():
         os.remove('dlFolder\\zipped')
     if os.path.exists('dlFolder\\currentMap'):
         shutil.rmtree('dlFolder\\currentMap')
-    return mapList
 # download dlFolder
 # read through dlFolder
 # delete dlFolder
@@ -60,7 +59,7 @@ def findDiffs():
         if infoDAT['_difficultyBeatmapSets'][i]['_beatmapCharacteristicName'] == 'Standard':
             standardIndex = i
             break
-    print(infoDAT['_songName']+'\n')
+    print(infoDAT['_songName'], infoDAT['_levelAuthorName'] +'\n')
     if standardIndex == -1:
         return []
     diffList = []
@@ -124,11 +123,11 @@ def generateHashList(date):
     return mapList, end
 
 
-
+initialize()
 counter = 0
 date = '2020-09-11T00%3A00%3A00%2B00%3A00'
 while counter < 1:
-    counter += 1
+    # counter += 1
     mapList, date = generateHashList(date)
     for beatMap in mapList:
         downloadMap(beatMap)
