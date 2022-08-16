@@ -82,7 +82,6 @@ def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
         lastJSON = [None, None]
         # names of the last notes for each hand
         lastNames = ['', '']
-        print(diff[:-12], end=' ')
         diffDAT = open(folder + diff, 'r')
         try:
             d = json.load(diffDAT)
@@ -196,25 +195,33 @@ def createDictionary():
     return parityDict, unresolved
 
 
-initialize()
-counter = 0
-start_date = '2020-10-09T00%3A00%3A00%2B00%3A00'
-end_date = '2022-08-13T00%3A00%3A00%2B00%3A00'
-while counter < 1:
-    counter += 1
-    mapList, end_date = generateHashList(start_date, end_date)
-    for beatMap in mapList:
-        time.sleep(0.5)
-        downloaded = downloadMap(beatMap)
-        if not downloaded:
-            print('\nskipped: '+beatMap)
+# max_calls at -1 for infinite
+def generateFromRanked(start_date='2020-10-09T00%3A00%3A00%2B00%3A00', end_date='2022-08-13T00%3A00%3A00%2B00%3A00', max_calls=1):
+    counter = max_calls
+    while counter != 0:
+        counter -= 1
+        mapList, end_date = generateHashList(start_date, end_date)
+        for beatMap in mapList:
+            time.sleep(0.5)
+            downloaded = downloadMap(beatMap)
+            if not downloaded:
+                print('\nskipped: ' + beatMap)
+                deleteMap()
+                continue
+            diffs = findDiffs()
+            readDiffs(diffs)
             deleteMap()
-            continue
-        diffs = findDiffs()
-        readDiffs(diffs)
-        deleteMap()
-    if len(mapList) != 20:
-        break
+        if len(mapList) != 20:
+            break
+
+
+def generateFromFolder(path):
+    readDiffs(os.listdir(path), folder=path)
+
+
+initialize()
+
+generateFromFolder('tech\\')
 
 totals = open('note_totals.txt', 'w')
 totals.write(json.dumps(nT, indent=4))
