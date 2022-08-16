@@ -5,10 +5,12 @@ from Utils import noteJSON as nJ
 from Utils import generateCutPath as cP
 from Utils import generateNoteTimesFromDat as times
 from Utils import noteDict as nD
-# actually store probabilities
+
+
 noteDict = nD
+sums = json.load(open('sums.txt', 'r'))
 FIRST_RIGHT_NOTE = '2110'
-FIRST_LEFT_NOTE = '9001'
+FIRST_LEFT_NOTE = '1100'
 START_BEAT = 4
 
 
