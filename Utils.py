@@ -1,25 +1,6 @@
 import json
 
-
-def mirrorNote(note_ID):
-    new_coord = hex(int(note_ID[0], 16) ^ 0b11)
-    if note_ID[1] in ['4', '2', '6']:
-        new_cut = str(int(note_ID[1]) + 1)
-    elif note_ID[1] in ['5','3','7']:
-        new_cut = str(int(note_ID[1]) - 1)
-    else:
-        new_cut = note_ID[1]
-    new_hand = str(int(note_ID[2]) ^ 1)
-
-    return (new_coord + new_cut + new_hand + note_ID[3])[2:]
-
-
-def mirrorNoteDict(dict):
-    new_dict = {}
-    for key in dict:
-        note_list = [mirrorNote(k) for k in dict[key]]
-        new_dict.update({mirrorNote(key): note_list})
-    return new_dict
+noteDict = json.load(open('good.txt', 'r'))
 
 
 def noteJSON(name, time):
@@ -38,15 +19,6 @@ def noteName(JSON, parity=''):
              ['4', '5', '6', '7'],
              ['0', '1', '2', '3']]
     return coord[2-JSON['_lineLayer']][JSON['_lineIndex']]+str(JSON['_cutDirection'])+str(JSON['_type'])+str(parity)
-
-
-def noteCSVtoDict(csv):
-    noteDict = dict()
-    vals = open(csv, 'r')
-    for line in vals.readlines():
-        chains = line[:-1].split(',')
-        noteDict[chains[0]] = [c for c in chains[1:] if c != '']
-    return noteDict
 
 
 def generateCutPath(noteName):
@@ -83,7 +55,3 @@ def generateNoteTimesFromDat(filepath):
         if len(noteSet) > len(noteTimes):
             noteTimes.append(note['_time'])
     return noteTimes
-
-
-noteDict = noteCSVtoDict('RightHand.csv')
-noteDict.update(mirrorNoteDict(noteDict))

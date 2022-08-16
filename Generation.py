@@ -26,8 +26,9 @@ headers = {
 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
 }
 
-nD = dict()
+nT = dict()
 SLIDER_TIMING = 1/13
+
 
 def initialize():
     if not os.path.exists('dlFolder\\'):
@@ -36,9 +37,6 @@ def initialize():
         os.remove('dlFolder\\zipped')
     if os.path.exists('dlFolder\\currentMap'):
         shutil.rmtree('dlFolder\\currentMap')
-# download dlFolder
-# read through dlFolder
-# delete dlFolder
 
 
 def downloadMap(bshash):
@@ -103,15 +101,15 @@ def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
                 lastNames[ty] = nameof(note)
             else:
                 # check for stack/window/slider/DD , if so skip
-                if lastJSON[ty]['_time']+SLIDER_TIMING >= note['_time'] or lastNames[ty] == nameof(note):
+                if lastJSON[ty]['_time']+SLIDER_TIMING >= note['_time'] or lastNames[ty][1] == nameof(note)[1]:
                     continue
                 # otherwise make a chain from the last note to this one
                 else:
                     chainName = lastNames[ty] + ' ' + nameof(note)
-                    if chainName in nD.keys():
-                        nD[chainName] += 1
+                    if chainName in nT.keys():
+                        nT[chainName] += 1
                     else:
-                        nD[chainName] = 1
+                        nT[chainName] = 1
                     lastJSON[ty] = note
                     lastNames[ty] = nameof(note)
     print()
@@ -136,10 +134,7 @@ def generateHashList(start_date, end_date):
     return mapList, end
 
 
-
-def assignParities():
-    parityDict = dict()
-    techList = []
+def generateParity(note):
     cutDict = {
         '1': {
             '0': 1,
@@ -162,34 +157,51 @@ def assignParities():
             '7': 0
         }
     }
-    for key in nD.keys():
+    return cutDict[note[2]][note[1]]
+
+
+def filterChain(first, last):
+    bad_list = [{'1', '7'}, {'1', '6'}, {'4', '0'}, {'5', '0'}, {'5', '3'}, {'7', '3'}, {'6', '2'}, {'4', '2'}]
+    return first[1] == '8' or last[1] == '8' or {first[1], last[1]} in bad_list
+
+
+def calculateSums(nD):
+    sums = dict()
+    for first, following in nD.items():
+        for last, amt in following:
+            if first in sums.keys():
+                sums[first] += amt
+            else:
+                sums[first] = amt
+    return sums
+
+
+def createDictionary():
+    parityDict = dict()
+    unresolved = []
+    for key in nT.keys():
         first = key[:3]
         last = key[4:]
-        bad_list = [{'1', '7'}, {'1', '6'}, {'4', '0'}, {'5', '0'}, {'5', '3'}, {'7', '3'}, {'6', '2'}, {'4', '2'}]
-        if first[1] == '8' or last[1] == '8' or {first[1], last[1]} in bad_list:
+        if filterChain(first, last):
             continue
-        fp = cutDict[first[2]][first[1]]
-        lp = cutDict[last[2]][last[1]]
+        fp = generateParity(first)
+        lp = generateParity(last)
         if fp == lp:
-            techList.append(key)
+            unresolved.append(key)
         else:
-            if first+str(fp) in parityDict.keys():
-                parityDict[first+str(fp)].append(last+str(lp))
+            if first + str(fp) in parityDict.keys():
+                parityDict[first + str(fp)].append((last + str(lp), nT[key]))
             else:
-                parityDict[first + str(fp)] = [last + str(lp)]
-    tech = open('tech.txt', 'w')
-    good = open('good.txt', 'w')
-    for chain in techList:
-        tech.write(chain + '\n')
-    for key, value in parityDict.items():
-        good.write('\''+key + '\': ' + str(value) + ',\n')
+                parityDict[first + str(fp)] = [(last + str(lp), nT[key])]
+    return parityDict, unresolved
+
 
 initialize()
 counter = 0
 start_date = '2020-10-09T00%3A00%3A00%2B00%3A00'
 end_date = '2022-08-13T00%3A00%3A00%2B00%3A00'
 while counter < 1:
-    # counter += 1
+    counter += 1
     mapList, end_date = generateHashList(start_date, end_date)
     for beatMap in mapList:
         time.sleep(0.5)
@@ -203,9 +215,14 @@ while counter < 1:
         deleteMap()
     if len(mapList) != 20:
         break
-totals = open('note_totals.txt', 'w')
-sort = sorted(nD.items(), key=lambda kv: -kv[1])
-for key, value in sort:
-    totals.write(key + ': ' + str(value) + '\n')
-assignParities()
 
+totals = open('note_totals.txt', 'w')
+totals.write(json.dumps(nT, indent=4))
+
+good, tech = createDictionary()
+sums = calculateSums(good)
+
+goodLog = open('good.txt', 'w')
+goodLog.write(json.dumps(good, indent=4))
+sumsLog = open('sums.txt', 'w')
+sumsLog.write(json.dumps(sums, indent=4))
