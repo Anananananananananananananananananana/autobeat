@@ -195,15 +195,15 @@ def createDictionary():
                     else:
                         parityDict[first + str(p)] = [(last + str(p ^ 1), nT[key])]
             elif len(fp) > len(lp):
-                if first + str(lp ^ 1) in parityDict.keys():
-                    parityDict[first + str(lp ^ 1)].append((last + str(lp), nT[key]))
+                if first + str(lp[0] ^ 1) in parityDict.keys():
+                    parityDict[first + str(lp[0] ^ 1)].append((last + str(lp[0]), nT[key]))
                 else:
-                    parityDict[first + str(lp ^ 1)] = [(last + str(lp), nT[key])]
+                    parityDict[first + str(lp[0] ^ 1)] = [(last + str(lp[0]), nT[key])]
             else:
                 if first + str(fp) in parityDict.keys():
-                    parityDict[first + str(fp)].append((last + str(fp ^ 1), nT[key]))
+                    parityDict[first + str(fp[0])].append((last + str(fp[0] ^ 1), nT[key]))
                 else:
-                    parityDict[first + str(fp)] = [(last + str(fp ^ 1), nT[key])]
+                    parityDict[first + str(fp[0])] = [(last + str(fp[0] ^ 1), nT[key])]
     return parityDict, unresolved
 
 
@@ -233,7 +233,7 @@ def generateFromFolder(path):
 
 initialize()
 
-generateFromFolder('fun\\')
+generateFromFolder('tech\\')
 
 totals = open('note_totals.txt', 'w')
 totals.write(json.dumps(nT, indent=4))
@@ -241,6 +241,9 @@ totals.write(json.dumps(nT, indent=4))
 good, tech = createDictionary()
 sums = calculateSums(good)
 
+techLog = open('tech.txt', 'w')
+for pair in tech:
+    techLog.write(pair + '\n')
 goodLog = open('good.txt', 'w')
 goodLog.write(json.dumps(good, indent=4))
 sumsLog = open('sums.txt', 'w')
