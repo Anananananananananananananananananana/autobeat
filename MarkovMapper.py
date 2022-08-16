@@ -27,7 +27,7 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
     }
 
     for nt in noteTimes:
-        placingRightNote, placingLeftNote = determinePlacingNotes(nt, noteTimes)
+        placingLeftNote, placingRightNote = determinePlacingNotes(nt, noteTimes)
         if placingRightNote and placingLeftNote:
             dominance = random.randint(0, 1)
             while True:
