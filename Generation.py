@@ -136,24 +136,24 @@ def generateHashList(start_date, end_date):
 def generateParity(note):
     cutDict = {
         '1': {
-            '0': 1,
-            '1': 0,
-            '2': 0,
-            '3': 1,
-            '4': 1,
-            '5': 1,
-            '6': 0,
-            '7': 0
+            '0': [1],
+            '1': [0],
+            '2': [0],
+            '3': [0, 1],
+            '4': [0, 1],
+            '5': [1],
+            '6': [0],
+            '7': [0, 1]
         },
         '0': {
-            '0': 1,
-            '1': 0,
-            '2': 1,
-            '3': 0,
-            '4': 1,
-            '5': 1,
-            '6': 0,
-            '7': 0
+            '0': [1],
+            '1': [0],
+            '2': [0, 1],
+            '3': [0],
+            '4': [1],
+            '5': [0, 1],
+            '6': [0, 1],
+            '7': [0]
         }
     }
     return cutDict[note[2]][note[1]]
@@ -185,13 +185,25 @@ def createDictionary():
             continue
         fp = generateParity(first)
         lp = generateParity(last)
-        if fp == lp:
+        if fp == lp and len(fp) == 1:
             unresolved.append(key)
         else:
-            if first + str(fp) in parityDict.keys():
-                parityDict[first + str(fp)].append((last + str(lp), nT[key]))
+            if len(fp) == len(lp):
+                for p in fp:
+                    if first + str(p) in parityDict.keys():
+                        parityDict[first + str(p)].append((last + str(p ^ 1), nT[key]))
+                    else:
+                        parityDict[first + str(p)] = [(last + str(p ^ 1), nT[key])]
+            elif len(fp) > len(lp):
+                if first + str(lp ^ 1) in parityDict.keys():
+                    parityDict[first + str(lp ^ 1)].append((last + str(lp), nT[key]))
+                else:
+                    parityDict[first + str(lp ^ 1)] = [(last + str(lp), nT[key])]
             else:
-                parityDict[first + str(fp)] = [(last + str(lp), nT[key])]
+                if first + str(fp) in parityDict.keys():
+                    parityDict[first + str(fp)].append((last + str(fp ^ 1), nT[key]))
+                else:
+                    parityDict[first + str(fp)] = [(last + str(fp ^ 1), nT[key])]
     return parityDict, unresolved
 
 
