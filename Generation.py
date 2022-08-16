@@ -221,7 +221,7 @@ def generateFromFolder(path):
 
 initialize()
 
-generateFromFolder('tech\\')
+generateFromFolder('fun\\')
 
 totals = open('note_totals.txt', 'w')
 totals.write(json.dumps(nT, indent=4))

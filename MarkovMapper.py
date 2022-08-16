@@ -62,7 +62,19 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
 
 def generateNote(prevNote, prevHandedNote):
     while True:
-        nextNote = noteDict[prevHandedNote][random.randint(0, len(noteDict[prevHandedNote]) - 1)]
+        # nextNote = noteDict[prevHandedNote][random.randint(0, len(noteDict[prevHandedNote]) - 1)]
+        nextNote = None
+        n = random.randint(1, sums[prevHandedNote])
+        sum = 0
+        for note, freq in noteDict[prevHandedNote]:
+            if sum + 1 <= n <= sum + freq:
+                nextNote = note
+                break
+            sum += freq
+
+        if nextNote is None:
+            raise Exception("bad random formula")
+
         if not isBadNote(prevNote, nextNote):
             break
     return nextNote
