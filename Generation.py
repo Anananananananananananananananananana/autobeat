@@ -2,7 +2,6 @@ import os
 import shutil
 import time
 import zipfile
-from Utils import noteName as nameof
 import pip
 try:
     import requests
@@ -97,20 +96,20 @@ def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
                 continue
             elif lastJSON[ty] is None:
                 lastJSON[ty] = note
-                lastNames[ty] = nameof(note)
+                lastNames[ty] = noteName(note)
             else:
                 # check for stack/window/slider/DD , if so skip
-                if lastJSON[ty]['_time']+SLIDER_TIMING >= note['_time'] or lastNames[ty][1] == nameof(note)[1]:
+                if lastJSON[ty]['_time']+SLIDER_TIMING >= note['_time'] or lastNames[ty][1] == noteName(note)[1]:
                     continue
                 # otherwise make a chain from the last note to this one
                 else:
-                    chainName = lastNames[ty] + ' ' + nameof(note)
+                    chainName = lastNames[ty] + ' ' + noteName(note)
                     if chainName in nT.keys():
                         nT[chainName] += 1
                     else:
                         nT[chainName] = 1
                     lastJSON[ty] = note
-                    lastNames[ty] = nameof(note)
+                    lastNames[ty] = noteName(note)
     print()
 
 
@@ -231,9 +230,16 @@ def generateFromFolder(path):
     readDiffs(os.listdir(path), folder=path)
 
 
+def noteName(JSON, parity=''):
+    coord = [['8', '9', 'a', 'b'],
+             ['4', '5', '6', '7'],
+             ['0', '1', '2', '3']]
+    return coord[2-JSON['_lineLayer']][JSON['_lineIndex']]+str(JSON['_cutDirection'])+str(JSON['_type'])+str(parity)
+
+
 initialize()
 
-generateFromFolder('tech\\')
+generateFromRanked(max_calls=-1)
 
 totals = open('note_totals.txt', 'w')
 totals.write(json.dumps(nT, indent=4))

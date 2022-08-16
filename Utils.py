@@ -13,14 +13,6 @@ def noteJSON(name, time):
     }
     return data
 
-
-def noteName(JSON, parity=''):
-    coord = [['8', '9', 'a', 'b'],
-             ['4', '5', '6', '7'],
-             ['0', '1', '2', '3']]
-    return coord[2-JSON['_lineLayer']][JSON['_lineIndex']]+str(JSON['_cutDirection'])+str(JSON['_type'])+str(parity)
-
-
 def generateCutPath(noteName):
     cutPaths = {
         '0': lambda k: [k - 4],

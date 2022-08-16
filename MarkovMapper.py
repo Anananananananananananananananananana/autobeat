@@ -86,7 +86,7 @@ def isBadNote(prevNote, currNote):
 
 def isVisionBlock(prevNote, currNote):
     # same coordinate is a vision block
-    return prevNote[0] == currNote[0]
+    return prevNote[0] == currNote[0] and prevNote[2] != currNote[2]
 
 
 def isOppositeColumn(prevNote, currNote):
