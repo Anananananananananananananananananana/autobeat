@@ -3,7 +3,7 @@ import random
 import Utils
 from Utils import noteJSON as nJ
 from Utils import generateCutPath as cP
-from Utils import generateNoteTimesFromDat as times
+from Utils import generateTimesAndPlacements as tP
 from Utils import noteDict as nD
 
 
@@ -12,27 +12,22 @@ sums = json.load(open('sums.txt', 'r'))
 FIRST_RIGHT_NOTE = '2110'
 FIRST_LEFT_NOTE = '1100'
 START_BEAT = 4
-
-
+noteTimes, notePlacements = tP('look.dat')
 # work off probabilities
 def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'r')
     datJSON = json.load(dat)
     dat.close()
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'w')
-    placingLeftNote = random.randint(0, 1) == 1
-    placingRightNote = random.randint(0, 1) == 1
-
-    noteTimes = times('look.dat')  # Temporary placeholder value
-
-    datJSON['_notes'] = [nJ(FIRST_RIGHT_NOTE, noteTimes[0]), nJ(FIRST_LEFT_NOTE, noteTimes[1])]
+    datJSON['_notes'] = []
     lastNotes = {
         '0': FIRST_LEFT_NOTE,
         '1': FIRST_RIGHT_NOTE,
         '-1': FIRST_LEFT_NOTE
     }
 
-    for nt in noteTimes[2:]:
+    for nt in noteTimes:
+        placingRightNote, placingLeftNote = determinePlacingNotes(nt, noteTimes)
         if placingRightNote and placingLeftNote:
             dominance = random.randint(0, 1)
             while True:
@@ -55,7 +50,6 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
             datJSON['_notes'].append(nJ(nextLeftNote, nt))
             lastNotes['0'] = nextLeftNote
             lastNotes['-1'] = nextLeftNote
-        placingRightNote, placingLeftNote = determinePlacingNotes(nt, noteTimes)
     # Dump new notes json into difficulty.dat
     json.dump(datJSON, dat)
 
@@ -91,8 +85,8 @@ def isBadNote(prevNote, currNote):
 
 
 def isVisionBlock(prevNote, currNote):
-    # opposite hands, same coordinate is a vision block
-    return prevNote[0] == currNote[0] and prevNote[2] != currNote[2]
+    # same coordinate is a vision block
+    return prevNote[0] == currNote[0]
 
 
 def isOppositeColumn(prevNote, currNote):
@@ -107,9 +101,10 @@ def isOppositeColumn(prevNote, currNote):
 
 def determinePlacingNotes(time, times):
     i = times.index(time)
+    return notePlacements[i]
     # if notes are too close together it will only place one of the two notes
-    if times[i-1] >= time - 0.25 and times[i+1] <= time + 0.25:
-        return [(True, False), (False, True)][random.randint(0, 1)]
-    else:
-        return [(True, False), (False, True), (True, True)][random.randint(0, 2)]
+    # if times[i-1] >= time - 0.25 and times[i+1] <= time + 0.25:
+    #     return [(True, False), (False, True)][random.randint(0, 1)]
+    # else:
+    #     return [(True, False), (False, True), (True, True)][random.randint(0, 2)]
         

@@ -1,7 +1,7 @@
 import json
 
 noteDict = json.load(open('good.txt', 'r'))
-
+SLIDER_TIMING = 1/13
 
 def noteJSON(name, time):
     data = {
@@ -55,3 +55,24 @@ def generateNoteTimesFromDat(filepath):
         if len(noteSet) > len(noteTimes):
             noteTimes.append(note['_time'])
     return noteTimes
+
+def generateTimesAndPlacements(filepath):
+    dat = json.load(open(filepath, 'r'))
+    noteTimes = []
+    notePlacements = []
+    placing = [False, False]
+    for note in dat['_notes']:
+        if note['_type'] != 3:
+            if len(noteTimes) == 0:
+                noteTimes.append(note['_time'])
+                placing[note['_type']] = True
+            elif noteTimes[-1] == note['_time']:
+                placing[note['_type']] = True
+            elif noteTimes[-1] != note['_time']:
+                notePlacements.append(placing)
+                placing = [False, False]
+                if noteTimes[-1] + SLIDER_TIMING < note['_time']:
+                    placing[note['_type']] = True
+                    noteTimes.append(note['_time'])
+    notePlacements.append(placing)
+    return noteTimes, notePlacements
