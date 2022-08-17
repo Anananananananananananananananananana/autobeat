@@ -178,6 +178,9 @@ def createDictionary():
     parityDict = dict()
     unresolved = []
     for key in nT.keys():
+        if nT[key] < 10:
+            unresolved.append(key)
+            continue
         first = key[:3]
         last = key[4:]
         if filterChain(first, last):
@@ -239,7 +242,8 @@ def noteName(JSON, parity=''):
 
 initialize()
 
-generateFromRanked(max_calls=-1)
+# generateFromRanked(max_calls=-1)
+generateFromFolder('fun\\')
 
 totals = open('note_totals.txt', 'w')
 totals.write(json.dumps(nT, indent=4))
