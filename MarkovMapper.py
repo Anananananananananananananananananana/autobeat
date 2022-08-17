@@ -4,10 +4,10 @@ import Utils
 from Utils import noteJSON as nJ
 from Utils import generateCutPath as cP
 from Utils import generateTimesAndPlacements as tP
-from Utils import noteDict as nD
+noteDict = json.load(open('good.txt', 'r'))
 
 
-noteDict = nD
+
 sums = json.load(open('sums.txt', 'r'))
 FIRST_RIGHT_NOTE = '2110'
 FIRST_LEFT_NOTE = '1100'

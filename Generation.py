@@ -139,7 +139,7 @@ def generateParity(note):
             '1': [0],
             '2': [0],
             '3': [0, 1],
-            '4': [0],
+            '4': [0, 1],
             '5': [1],
             '6': [0],
             '7': [0, 1]
@@ -150,7 +150,7 @@ def generateParity(note):
             '2': [0, 1],
             '3': [0],
             '4': [1],
-            '5': [0],
+            '5': [0, 1],
             '6': [0, 1],
             '7': [0]
         }
@@ -178,9 +178,6 @@ def createDictionary():
     parityDict = dict()
     unresolved = []
     for key in nT.keys():
-        if nT[key] < 10:
-            unresolved.append(key)
-            continue
         first = key[:3]
         last = key[4:]
         if filterChain(first, last):
@@ -206,8 +203,30 @@ def createDictionary():
                     parityDict[first + str(fp[0])].append((last + str(fp[0] ^ 1), nT[key]))
                 else:
                     parityDict[first + str(fp[0])] = [(last + str(fp[0] ^ 1), nT[key])]
+
     return parityDict, unresolved
 
+def filterParityDict(parityDict, unresolved):
+    
+    while True:
+        n = len(parityDict.keys())
+        parityKeys = [i for i in parityDict.keys()]
+        for key in parityKeys:
+            if len(parityDict[key]) < 2:
+                parityDict.pop(key)
+                unresolved.append(key)  
+
+        for key in parityDict.keys():
+            patlist = []
+            for pat in parityDict[key]:
+                if pat[0] in parityDict.keys():
+                    patlist.append(pat)
+            parityDict[key] = patlist
+
+        if len(parityDict.keys()) == n:
+            break
+
+    return parityDict, unresolved
 
 # max_calls at -1 for infinite
 def generateFromRanked(start_date='2020-10-09T00%3A00%3A00%2B00%3A00', end_date='2022-08-13T00%3A00%3A00%2B00%3A00', max_calls=1):
@@ -243,12 +262,15 @@ def noteName(JSON, parity=''):
 initialize()
 
 # generateFromRanked(max_calls=-1)
-generateFromFolder('fun\\')
+generateFromFolder('speed\\')
 
 totals = open('note_totals.txt', 'w')
 totals.write(json.dumps(nT, indent=4))
 
 good, tech = createDictionary()
+
+good, tech = filterParityDict(good, tech)
+
 sums = calculateSums(good)
 
 techLog = open('tech.txt', 'w')
