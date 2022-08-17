@@ -9,8 +9,8 @@ noteDict = json.load(open('good.txt', 'r'))
 
 
 sums = json.load(open('sums.txt', 'r'))
-FIRST_RIGHT_NOTE = '7011'
-FIRST_LEFT_NOTE = '4001'
+FIRST_RIGHT_NOTE = '7311'
+FIRST_LEFT_NOTE = '8401'
 START_BEAT = 4
 noteTimes, notePlacements = tP('look.dat')
 # work off probabilities
