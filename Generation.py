@@ -261,8 +261,8 @@ def noteName(JSON, parity=''):
 
 initialize()
 
-# generateFromRanked(max_calls=-1)
-generateFromFolder('speed\\')
+generateFromRanked(max_calls=-1)
+# generateFromFolder('tech\\')
 
 totals = open('note_totals.txt', 'w')
 totals.write(json.dumps(nT, indent=4))
