@@ -2,6 +2,7 @@ import json
 import os
 import MarkovMapper as mappy
 
+# Difficulty names and ranks recognized by Beat Saber
 POSSIBLE_DIFF_NAMES = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus']
 DIFFICULTY_RANKS = {
     'Easy': 1,
@@ -11,7 +12,7 @@ DIFFICULTY_RANKS = {
     'ExpertPlus': 9
 }
 
-
+# puts the song information (artist, name, bpm, etc.) into a dictionary to be put into info.dat
 def createInfoDict(songInfo, mapInfo, customSongData=None):
     info = {
         '_version': '2.0.0',
@@ -35,6 +36,8 @@ def createInfoDict(songInfo, mapInfo, customSongData=None):
         info['_customData'] = customSongData
     return info
 
+
+# Creates an empty map of the specified difficulty to be mapped into
 def createDifficulty(songFolderName, diff, style):
     diff_dict = {
         '_version': '2.0.0',
@@ -85,6 +88,7 @@ def updateDifficulty(info, diffInfo, customData=None):
     info['_difficultyBeatmapSets'][setIndex]['_difficultyBeatmaps'].append(difficultyJSON)
 
 
+# dumps the info dictionary into a dat file that Beat Saber can understand
 def createInfoDat(info, songFolderName):
     infoJSON = json.dumps(info, indent=2)
     f = open(songFolderName+'\\Info.dat', 'w')
@@ -92,13 +96,13 @@ def createInfoDat(info, songFolderName):
     f.close()
 
 
-
-
+# creates the folder the final map and info.dat are exported into
 def createSongFolder(songFolderName):
     if not os.path.exists(songFolderName):
         os.mkdir(songFolderName)
 
 
+# main function that when run creates a map (currently mapping Look What You Made Me Do - Taylor Swift)
 def createTestFolder():
     createSongFolder('test')
     songInfo = {

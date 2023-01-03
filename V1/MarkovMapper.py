@@ -1,19 +1,19 @@
 import json
 import random
-import Utils
-from Utils import noteJSON as nJ
-from Utils import generateCutPath as cP
-from Utils import generateTimesAndPlacements as tP
+from Utils import noteJSON
+from Utils import generateCutPath
+from Utils import generateTimesAndPlacements
 noteDict = json.load(open('good.txt', 'r'))
-
 
 
 sums = json.load(open('sums.txt', 'r'))
 FIRST_RIGHT_NOTE = '7311'
 FIRST_LEFT_NOTE = '8401'
 START_BEAT = 4
-noteTimes, notePlacements = tP('look.dat')
-# work off probabilities
+noteTimes, notePlacements = generateTimesAndPlacements('look.dat')
+
+
+# Generates the notes sequentially and places them in a dat file that Beat Saber can understand
 def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
     dat = open(songFolderName+'\\'+difficulty+style+'.dat', 'r')
     datJSON = json.load(dat)
@@ -37,23 +37,25 @@ def mapDifficulty(songFolderName, difficulty, style, numBeats=200):
                     break
             lastNotes[str(dominance)] = note1
             lastNotes[str(dominance ^ 1)] = note2
-            datJSON['_notes'].append(nJ(note1, nt))
-            datJSON['_notes'].append(nJ(note2, nt))
+            datJSON['_notes'].append(noteJSON(note1, nt))
+            datJSON['_notes'].append(noteJSON(note2, nt))
             lastNotes['-1'] = note2
         elif placingRightNote:
             nextRightNote = generateNote(lastNotes['-1'], lastNotes['1'])
-            datJSON['_notes'].append(nJ(nextRightNote, nt))
+            datJSON['_notes'].append(noteJSON(nextRightNote, nt))
             lastNotes['1'] = nextRightNote
             lastNotes['-1'] = nextRightNote
         elif placingLeftNote:
             nextLeftNote = generateNote(lastNotes['-1'], lastNotes['0'])
-            datJSON['_notes'].append(nJ(nextLeftNote, nt))
+            datJSON['_notes'].append(noteJSON(nextLeftNote, nt))
             lastNotes['0'] = nextLeftNote
             lastNotes['-1'] = nextLeftNote
     # Dump new notes json into difficulty.dat
     json.dump(datJSON, dat)
 
 
+# generates the next note based on the last note placed,
+# and the last note of the same hand placed (Which may be the same)
 def generateNote(prevNote, prevHandedNote):
     while True:
         # nextNote = noteDict[prevHandedNote][random.randint(0, len(noteDict[prevHandedNote]) - 1)]
@@ -74,19 +76,23 @@ def generateNote(prevNote, prevHandedNote):
     return nextNote
 
 
+# does a loose check to see if a "double" is humanly impossible to hit
 def isBadDouble(note1, note2):
-    if note2[0] in cP(note1) or note1[0] in cP(note2):
+    if note2[0] in generateCutPath(note1) or note1[0] in generateCutPath(note2):
         return True
     return False
 
 
+# does a loose check to see if a note meets the criteria to place in the map
 def isBadNote(prevNote, currNote):
     return isVisionBlock(prevNote, currNote) or isOppositeColumn(prevNote, currNote)
 
 
+# does a loose check to seee if this note is blocked by a previously placed note
 def isVisionBlock(prevNote, currNote):
     # same coordinate is a vision block
     return prevNote[0] == currNote[0] and prevNote[2] != currNote[2]
+
 
 
 def isOppositeColumn(prevNote, currNote):
@@ -99,6 +105,7 @@ def isOppositeColumn(prevNote, currNote):
     return False
 
 
+# determines which note to place
 def determinePlacingNotes(time, times):
     i = times.index(time)
     return notePlacements[i]
@@ -107,4 +114,3 @@ def determinePlacingNotes(time, times):
     #     return [(True, False), (False, True)][random.randint(0, 1)]
     # else:
     #     return [(True, False), (False, True), (True, True)][random.randint(0, 2)]
-        

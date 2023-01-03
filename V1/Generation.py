@@ -229,7 +229,7 @@ def filterParityDict(parityDict, unresolved):
     return parityDict, unresolved
 
 # max_calls at -1 for infinite
-def generateFromRanked(start_date='2020-10-09T00%3A00%3A00%2B00%3A00', end_date='2022-08-13T00%3A00%3A00%2B00%3A00', max_calls=1):
+def generateFromRanked(start_date='2020-10-09T00%3A00%3A00%2B00%3A00', end_date='2022-12-22T00%3A00%3A00%2B00%3A00', max_calls=1):
     counter = max_calls
     while counter != 0:
         counter -= 1

@@ -2,7 +2,6 @@ import json
 
 noteDict = json.load(open('good.txt', 'r'))
 SLIDER_TIMING = 1/13
-
 def noteJSON(name, time):
     data = {
         "_time": time,
