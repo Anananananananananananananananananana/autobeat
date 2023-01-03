@@ -22,7 +22,6 @@ def mkFiles(songfile: str, songInfo, mapInfo, difficulties):
     :param songInfo: JSON object that holds the song information such as Artist, Title, BPM etc.
     :param mapInfo: JSON object that holds the preview Start and Duration, as well as the Environment
     :param difficulties: A list of difficulty JSON objects ordered from Easy to ExpertPlus
-    :return:
     """
     createMapFolder()
     createInfoDat(songInfo, mapInfo, difficulties)
