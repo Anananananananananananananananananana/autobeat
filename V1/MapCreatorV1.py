@@ -1,6 +1,6 @@
 import json
 import os
-import MarkovMapper as mappy
+import MarkovMapperV1 as mappy
 
 # Difficulty names and ranks recognized by Beat Saber
 POSSIBLE_DIFF_NAMES = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus']

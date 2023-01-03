@@ -1,8 +1,8 @@
 import json
 import random
-from Utils import noteJSON
-from Utils import generateCutPath
-from Utils import generateTimesAndPlacements
+from UtilsV1 import noteJSON
+from UtilsV1 import generateCutPath
+from UtilsV1 import generateTimesAndPlacements
 noteDict = json.load(open('good.txt', 'r'))
 
 
