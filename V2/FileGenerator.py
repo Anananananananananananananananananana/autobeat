@@ -1,5 +1,8 @@
 import json
 import os
+import tempfile
+from pydub import AudioSegment
+
 
 # Difficulty names and ranks recognized by Beat Saber
 POSSIBLE_DIFF_NAMES = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus']
@@ -27,6 +30,13 @@ def createDifficulties():
     pass
 
 
-# Exports the audio file as song.ogg, and places it appropriately
-def exportAudioFile():
-    pass
+def exportAudioFile(filename: str):
+    """
+    Exports the audio file as song.ogg, and places it appropriately
+    """
+    with open(filename, "r") as audiofile:
+        data = audiofile.read()
+    f = tempfile.NamedTemporaryFile(delete=False)
+    f.write(data)
+    AudioSegment.from_mp3(f.name).export('export/result.ogg', format='ogg')
+    f.close()
