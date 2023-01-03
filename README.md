@@ -1,4 +1,4 @@
-# autobeat
+# Autobeat
 An automated mapping utility for beat saber that uses a markov model to generate maps.
 
 Notes are classified via a 4 character ID, which indicates
