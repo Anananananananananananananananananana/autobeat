@@ -206,15 +206,15 @@ def createDictionary():
 
     return parityDict, unresolved
 
+
 def filterParityDict(parityDict, unresolved):
-    
     while True:
         n = len(parityDict.keys())
         parityKeys = [i for i in parityDict.keys()]
         for key in parityKeys:
             if len(parityDict[key]) < 2:
                 parityDict.pop(key)
-                unresolved.append(key)  
+                unresolved.append(key)
 
         for key in parityDict.keys():
             patlist = []

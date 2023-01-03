@@ -94,7 +94,6 @@ def isVisionBlock(prevNote, currNote):
     return prevNote[0] == currNote[0] and prevNote[2] != currNote[2]
 
 
-
 def isOppositeColumn(prevNote, currNote):
     if prevNote[2] == currNote[2]:
         return False
