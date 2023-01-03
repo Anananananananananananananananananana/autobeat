@@ -2,7 +2,7 @@
 An automated mapping utility for beat saber that uses a markov model to generate maps.
 
 Notes are classified via a 4 character ID, which indicates
- - location (0x0-0xb)
+ - location on grid (0x0-0xb from bottom left to top right, row-wise)
  - cut direction (0-8)
  - handedness (0-1)
  - parity (0-1)
