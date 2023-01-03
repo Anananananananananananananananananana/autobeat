@@ -6,7 +6,6 @@ songInfo = {
     'subName': '',
     'artist': 'ARTIST',
     'bpm': 128,
-    'audio': 'song.ogg',
     'cover': ''
 }
 

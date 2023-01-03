@@ -15,25 +15,37 @@ DIFFICULTY_RANKS = {
 }
 
 
-# Main method that calls the others as necessary
-# difficulties should be sorted from Easy to ExpertPlus
-
-def mkFiles(songfile, songInfo, mapInfo, difficulties):
+def mkFiles(songfile: str, songInfo, mapInfo, difficulties):
+    """
+    Main method that calls the others as necessary
+    :param songfile: File path to the song file
+    :param songInfo: JSON object that holds the song information such as Artist, Title, BPM etc.
+    :param mapInfo: JSON object that holds the preview Start and Duration, as well as the Environment
+    :param difficulties: A list of difficulty JSON objects ordered from Easy to ExpertPlus
+    :return:
+    """
     createMapFolder()
     createInfoDat(songInfo, mapInfo, difficulties)
     createDifficulties(difficulties)
     exportAudioFile(songfile)
 
 
-# Creates the folder that info.dat, difficulty, and song.ogg are placed into
 def createMapFolder():
+    """
+    Creates the folder that info.dat, difficulty files, and song.ogg are placed into
+    """
     if os.path.exists('export'):
         shutil.rmtree('export')
     os.mkdir('export')
 
 
-# Creates the appropriate info.dat
 def createInfoDat(songInfo, mapInfo, difficulties):
+    """
+    Creates the appropriate info.dat
+    :param songInfo: JSON object that holds the song information such as Artist, Title, BPM etc.
+    :param mapInfo: JSON object that holds the preview Start and Duration, as well as the Environment
+    :param difficulties: A list of difficulty JSON objects ordered from Easy to ExpertPlus
+    """
     f = open('export\\Info.dat', 'w')
 
     # Creating barebones JSON version of Info.dat
@@ -48,7 +60,7 @@ def createInfoDat(songInfo, mapInfo, difficulties):
         '_shufflePeriod': 0.5,
         '_previewStartTime': mapInfo['pStart'],
         '_previewDuration': mapInfo['pDur'],
-        '_songFilename': songInfo['audio'],
+        '_songFilename': 'song.ogg',
         '_coverImageFilename': songInfo['cover'],
         '_environmentName': mapInfo['env'],
         '_allDirectionsEnvironmentName': 'GlassDesertEnvironment',
@@ -70,12 +82,16 @@ def createInfoDat(songInfo, mapInfo, difficulties):
             "_noteJumpStartBeatOffset": diff['offset']
         }
         infoJSON['_difficultyBeatmapSets'][0]['_difficultyBeatmaps'].append(difficultyJSON)
+
     f.write(json.dumps(infoJSON, indent=2))
     f.close()
 
 
-# Create empty difficulty.dat files
 def createDifficulties(difficulties):
+    """
+    Create empty difficulty.dat files
+    :param difficulties: A list of difficulty JSON objects ordered from Easy to ExpertPlus
+    """
     for diff in difficulties:
         open('export\\' + diff['diff'] + diff['type'] + '.dat', 'w')
 
@@ -83,6 +99,7 @@ def createDifficulties(difficulties):
 def exportAudioFile(songfile: str):
     """
     Exports the audio file as song.ogg, and places it appropriately
+    :param songfile: File path to the song file
     """
     with open(songfile, "r") as audiofile:
         data = audiofile.read()
