@@ -3,3 +3,5 @@ test
 export
 *.pyc
 *.txt
+V2/RNN.py
+V2/training_checkpoints
