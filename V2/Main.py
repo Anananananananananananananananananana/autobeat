@@ -5,7 +5,7 @@ songInfo = {
     'name': 'SONGNAME',
     'subName': '',
     'artist': 'ARTIST',
-    'bpm': 128,
+    'bpm': 120,
     'cover': ''
 }
 
@@ -33,4 +33,5 @@ easyInfo = {
 difficulties = [easyInfo, eplusInfo]
 
 mkFiles('look.ogg', songInfo, mapInfo, difficulties)
+
 

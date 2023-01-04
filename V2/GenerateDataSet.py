@@ -120,4 +120,4 @@ def noteName(JSON):
     return coord[2 - JSON['_lineLayer']][JSON['_lineIndex']] + str(JSON['_cutDirection']) + str(JSON['_type'])
 
 
-generateFromFolder('..\\speed\\')
+generateFromFolder('..\\fun\\')
