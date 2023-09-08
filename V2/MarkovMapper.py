@@ -34,14 +34,4 @@ def generateMap():
         json.dump(diff_dict, f)
 
 
-def noteAsJSON(name, time):
-    data = {
-        "_time": time,
-        "_lineIndex": int(name[0], 16) % 4,
-        "_lineLayer": int(name[0], 16)//4,
-        "_type": int(name[2]),
-        "_cutDirection": int(name[1])
-    }
-    return data
-
 generateMap()

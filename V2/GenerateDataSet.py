@@ -50,7 +50,7 @@ def downloadMap(bshash):
 
 def deleteMap():
     if os.path.exists('dlFolder\\zipped'):
-        shutil.rmtree('dlFolder\\zipped')
+        os.remove('dlFolder\\zipped')
     if os.path.exists('dlFolder\\currentMap'):
         shutil.rmtree('dlFolder\\currentMap')
 
@@ -80,13 +80,11 @@ def generateFromRanked(start_date='2020-10-09T00%3A00%3A00%2B00%3A00', end_date=
                 print('\nskipped: ' + beatMap)
                 deleteMap()
                 continue
-            # diffs = findDiffs()
-            diffs = None
+            diffs = findDiffs()
             readDiffs(diffs)
             deleteMap()
         if len(mapList) != 20:
             break
-
 
 def generateFromFolder(path):
     readDiffs(os.listdir(path), folder=path)
@@ -113,6 +111,30 @@ def readDiffs(diffNameList, folder='dlFolder\\currentMap\\'):
     train.close()
 
 
+def findDiffs():
+    path = 'dlFolder\\currentMap\\'
+    info = open(path+'Info.dat')
+    try:
+        infoDAT = json.load(info)
+    except:
+        return []
+    standardIndex = -1
+    for i in range(len(infoDAT['_difficultyBeatmapSets'])):
+        if infoDAT['_difficultyBeatmapSets'][i]['_beatmapCharacteristicName'] == 'Standard':
+            standardIndex = i
+            break
+    print('\n', infoDAT['_songName'], ' - ', infoDAT['_levelAuthorName'], sep='')
+    if standardIndex == -1:
+        return []
+    diffList = []
+    for beatMap in infoDAT['_difficultyBeatmapSets'][standardIndex]['_difficultyBeatmaps']:
+        if '_customData' in beatMap.keys() and '_requirements' in beatMap['_customData'].keys():
+            if 'Noodle Extensions' in beatMap['_customData']['_requirements'] or 'Mapping Extensions' in beatMap['_customData']['_requirements']:
+                continue
+        diffList.append(beatMap['_beatmapFilename'])
+    return diffList
+
+
 def noteName(JSON):
     coord = [['8', '9', 'a', 'b'],
              ['4', '5', '6', '7'],
@@ -120,4 +142,4 @@ def noteName(JSON):
     return coord[2 - JSON['_lineLayer']][JSON['_lineIndex']] + str(JSON['_cutDirection']) + str(JSON['_type'])
 
 
-generateFromFolder('..\\fun\\')
+generateFromRanked(max_calls=-1)
