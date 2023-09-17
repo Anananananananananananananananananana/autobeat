@@ -6,3 +6,4 @@ export
 V2/RNN.py
 V2/training_checkpoints
 V3/AllScoresExtracted.csv
+V3/BeatSaberMapsDataset
